@@ -1,0 +1,15 @@
+{
+  "inputs": [
+    { "id": "gitlab_token", "type": "promptString", "description": "GitLab read_api token", "password": true },
+    { "id": "snow_user", "type": "promptString", "description": "ServiceNow read user" },
+    { "id": "snow_pass", "type": "promptString", "description": "ServiceNow password", "password": true },
+    { "id": "es_api_key", "type": "promptString", "description": "Elastic API key (read-only)", "password": true }
+  ],
+  "servers": {
+    "gitlab":     { "type": "stdio", "command": "REPLACE_ME", "env": { "GITLAB_URL": "https://gitlab.example.com", "GITLAB_TOKEN": "${input:gitlab_token}" } },
+    "elastic":    { "type": "stdio", "command": "REPLACE_ME", "env": { "ES_URL": "https://elastic.example.com", "ES_API_KEY": "${input:es_api_key}" } },
+    "servicenow": { "type": "stdio", "command": "REPLACE_ME", "env": { "SNOW_INSTANCE": "https://example.service-now.com", "SNOW_USER": "${input:snow_user}", "SNOW_PASS": "${input:snow_pass}" } },
+    "kubernetes": { "type": "stdio", "command": "REPLACE_ME", "env": { "KUBECONFIG": "${userHome}/.kube/readonly-config" } },
+    "azure":      { "type": "stdio", "command": "REPLACE_ME" }
+  }
+}

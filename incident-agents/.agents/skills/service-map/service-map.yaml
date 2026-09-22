@@ -1,0 +1,44 @@
+# One entry per service. Identifiers + discovery hints.
+# Generate/refresh ingress fields with scripts/gen_ingress_map.py (Istio VirtualServices).
+services:
+  payments-api:
+    snow_ci: "Payments API - PROD"
+    snow_assignment_groups: ["Payments Platform", "Payments L2"]
+    owner_group: "Payments Platform"
+
+    # --- discovery hints (used when INC lacks CI/service) ---
+    aliases: [payments, payment service, pay api, PAYAPI]
+    business_functions: [payment, transfer, bill pay, zelle, send money]
+    keywords: [payment failed, transaction declined, transfer pending]
+    hosts: [api.bank.example.com]
+    url_paths: [/api/v1/payments, /api/v1/transfers]
+    error_codes: [PAY-1001, PAY-5003]
+    log_markers: [PaymentService, com.bank.payments]
+
+    k8s:
+      cluster: aks-prod-eastus
+      namespace: payments
+      deployments: [payments-api]
+      label_selector: app.kubernetes.io/name=payments-api
+    gitlab:
+      project: platform/payments-api
+      helm_chart_project: platform/helm-charts
+      deploy_job: deploy-prod
+    elastic:
+      index: logs-payments-*
+      service_field: service.name
+      service_value: payments-api
+    azure:
+      subscription: REPLACE_ME
+      resource_group: rg-payments-prod
+      resources: [kv-payments-prod, agw-prod-eastus]
+    nginx_upstream: payments_backend
+    dependencies: [auth-service, core-banking-gateway]
+
+# Global log locations used for estate-wide discovery
+elastic_global:
+  app_logs: logs-*
+  ingress_logs: logs-nginx-*          # NGINX Plus access/error logs
+  mesh_logs: logs-istio-*             # Istio gateway/sidecar access logs
+  service_field: service.name         # must be consistent (ECS) across indices
+  k8s_fields: { namespace: kubernetes.namespace, pod: kubernetes.pod.name }
